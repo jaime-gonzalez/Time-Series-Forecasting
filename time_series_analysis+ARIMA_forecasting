@@ -34,7 +34,7 @@ timeSeriesName.describe()
 timeSeriesName.plot()
 pyplot.show()
 
-#data vizualisation to check for seasonalities
+#data visualization to check for seasonalities
 
 plt.plot(timeSeriesName.groupby(pd.Grouper(freq='M')).mean())
 plt.xlabel('date')

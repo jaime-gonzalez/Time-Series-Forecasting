@@ -49,7 +49,7 @@ def evaluate_models(dataset, p_values, d_values, q_values):
 					continue
 	print('Best ARIMA%s MSE=%.3f' % (best_cfg, best_score))
     
-series=Series.from_csv('File Location%s'%timeSeriesName,header=0)
+series=Series.from_csv('file_path%s'%timeSeriesName,header=0)
 
 # evaluate parameters
 p_values = [0, 1, 2, 3, 4, 5]

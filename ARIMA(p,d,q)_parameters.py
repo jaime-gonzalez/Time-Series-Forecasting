@@ -53,7 +53,7 @@ d_values = range(0, 3)
 q_values = range(0, 5)
 warnings.filterwarnings("ignore")
 
-# iterate over your data for each demand
+# iterate over your data for each demand dataset
 for (i,j) in materialsBranches.iterrows():
    material_filter =  j.loc['Material']
    branch_filter =  j.loc['Branch/Filial']

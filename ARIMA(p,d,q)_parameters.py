@@ -1,18 +1,16 @@
-import os
 import pandas as pd
-import numpy as np
-import statsmodels.tsa.stattools
 import warnings
 
-from pandas import Series
-from pandas import read_csv
-from pandas import datetime
-from pandas import DataFrame
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.arima_model import ARIMA
-from statsmodels.tsa.arima_model import ARIMAResults
 
-timeSeriesName = 'dataset.csv'
+df = pd.read_csv('filepath/filename.csv',header=0, sep=',')
+
+series = df.set_index('Date')
+
+materialsBranches = df[['Material_Code','Branch/Filial']].drop_duplicates()
+
+mseResults = []
 
 # evaluate an ARIMA model for a given order (p,d,q)
 def evaluate_arima_model(X, arima_order):
@@ -47,13 +45,26 @@ def evaluate_models(dataset, p_values, d_values, q_values):
 					print('ARIMA%s MSE=%.3f' % (order,mse))
 				except:
 					continue
-	print('Best ARIMA%s MSE=%.3f' % (best_cfg, best_score))
+	mseResults.append((branch_filter,material_filter,best_cfg, best_score,frequency,mean,stdev,maximum,minimum))
     
-series=Series.from_csv('file_path%s'%timeSeriesName,header=0)
-
 # evaluate parameters
 p_values = [0, 1, 2, 3, 4, 5]
 d_values = range(0, 3)
 q_values = range(0, 5)
 warnings.filterwarnings("ignore")
-evaluate_models(series.values, p_values, d_values, q_values)
+
+# iterate over your data for each demand
+for (i,j) in materialsBranches.iterrows():
+   material_filter =  j.loc['Material']
+   branch_filter =  j.loc['Branch/Filial']
+   dataset = series[(series['Material']==material_filter)&
+                            (series['Branch/Filial']==branch_filter)].drop(columns=['Branch/Filial','Material'])
+   stdev = dataset['demand.'].std()
+   mean = dataset['demand.'].mean()
+   maximum = dataset['demand.'].max()
+   minimum = dataset['demand.'].min()
+   frequency = dataset['demand.'].count()
+   evaluate_models(dataset.values, p_values, d_values, q_values)
+
+resultado = pd.DataFrame(mseResults, columns=['Branch/Filial','Material','Parameters','MSE','Freq','Mean','Stdev','Max','Min'])
+resultado.to_excel('filepath/resultBestARIMA.xlsx',header=True,columns=(['Branch/Filial','Material','Parameters','MSE','Freq','Mean','Stdev','Max','Min']))
